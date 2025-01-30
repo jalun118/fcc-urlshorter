@@ -25,27 +25,26 @@ app.get('/api/hello', function (req, res) {
 const dataUrl = [];
 
 app.post("/api/shorturl", (req, res) => {
-  const { original_url, short_url } = req.body;
+  const { url } = req.body;
 
   try {
-    const url = new URL(original_url);
+    const newUrl = new URL(url);
 
-    dns.lookup(url.hostname, (err) => {
+    dns.lookup(newUrl.hostname, (err) => {
       if (err) return res.json({
         error: "invalid url"
       });
 
-      dataUrl.push({
-        dest: url,
-        alias: short_url
-      });
-
-      return res.json({ original_url, short_url });
     });
 
-    return res.json({
-      error: "invalid url"
+    const len = dataUrl.length;
+
+    dataUrl.push({
+      dest: newUrl,
+      alias: len
     });
+
+    return res.json({ original_url: url, short_url: len });
   } catch {
     return res.json({
       error: "invalid url"
