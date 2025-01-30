@@ -31,17 +31,21 @@ app.post("/api/shorturl", (req, res) => {
     const newUrl = new URL(url);
 
     dns.lookup(newUrl.hostname, (err) => {
-      if (err) throw new Error("invalid url");
+      if (err) {
+        res.json({
+          error: "invalid url"
+        });
+      } else {
+        const len = dataUrl.length;
+
+        dataUrl.push({
+          dest: newUrl,
+          alias: len
+        });
+
+        res.json({ original_url: url, short_url: len });
+      }
     });
-
-    const len = dataUrl.length;
-
-    dataUrl.push({
-      dest: newUrl,
-      alias: len
-    });
-
-    return res.json({ original_url: url, short_url: len });
   } catch {
     return res.json({
       error: "invalid url"
